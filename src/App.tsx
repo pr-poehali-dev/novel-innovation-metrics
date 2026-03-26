@@ -22,7 +22,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => (
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-6 md:gap-8">
           <Link to="/" className="font-bold text-xl">
-            НовоДом
+            Все-жилье.рф
           </Link>
           <MainNav />
         </div>
@@ -44,7 +44,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => (
     <footer className="border-t py-6 md:py-0">
       <div className="container flex flex-col items-center justify-between gap-4 md:h-16 md:flex-row">
         <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">
-          2024 НовоДом. Все права защищены.
+          2024 Все-жилье.рф. Все права защищены.
         </p>
         <div className="flex items-center gap-4 text-sm text-muted-foreground">
           <Link to="/terms" className="hover:underline">
