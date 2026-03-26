@@ -42,13 +42,10 @@ def handler(event: dict, context) -> dict:
             "body": "",
         }
 
-    xml_url = os.environ.get("NMARKET_XML_URL", "")
-    if not xml_url:
-        return {
-            "statusCode": 500,
-            "headers": {"Access-Control-Allow-Origin": "*"},
-            "body": json.dumps({"error": "NMARKET_XML_URL not set"}),
-        }
+    xml_url = os.environ.get(
+        "NMARKET_XML_URL",
+        "https://ecatalog-service.nmarket.pro/BasePro/?login=omkrol_yandex_ru&password=94EB7fK9n&regionGroupId=39"
+    )
 
     req = urllib.request.Request(xml_url, headers={"User-Agent": "Mozilla/5.0"})
     with urllib.request.urlopen(req, timeout=60) as resp:
