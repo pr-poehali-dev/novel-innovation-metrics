@@ -49,7 +49,7 @@ function toProperty(a: Apartment) {
     squareFeet: a.area || 0,
     yearBuilt: a.built_year || 0,
     status: "Доступно",
-    imageUrl: a.images?.[0] || "/placeholder.svg?height=300&width=400",
+    imageUrl: (a.images?.[0] || "/placeholder.svg?height=300&width=400").replace(/^http:\/\//i, "https://"),
   }
 }
 

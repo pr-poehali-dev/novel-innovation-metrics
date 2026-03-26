@@ -1,250 +1,254 @@
+import { useState, useEffect } from "react"
 import { Link, useParams } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Bed, Bath, Square, Calendar, MapPin, Phone, Mail, Heart, Share2, Home, ChevronRight } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
+import Icon from "@/components/ui/icon"
+
+const GET_APARTMENTS_URL = "https://functions.poehali.dev/b1211926-5bce-4e8b-a2a1-2e89b020174b"
+
+interface Apartment {
+  id: number
+  rooms: number | null
+  floor: number | null
+  floors_total: number | null
+  area: number | null
+  living_space: number | null
+  kitchen_space: number | null
+  price: number | null
+  renovation: string | null
+  balcony: string | null
+  building_name: string | null
+  building_state: string | null
+  building_phase: string | null
+  building_section: string | null
+  built_year: number | null
+  ready_quarter: number | null
+  lift: boolean | null
+  parking: string | null
+  address: string | null
+  locality: string | null
+  description: string | null
+  images: string[]
+  payment_methods: string | null
+  advantages: string[] | null
+  sales_agent_name: string | null
+  sales_agent_phone: string | null
+}
+
+function httpsUrl(url: string) {
+  return url.replace(/^http:\/\//i, "https://")
+}
+
+function roomsLabel(rooms: number | null) {
+  if (!rooms) return "Студия"
+  if (rooms === 1) return "1-комнатная"
+  if (rooms === 2) return "2-комнатная"
+  if (rooms === 3) return "3-комнатная"
+  return `${rooms}-комнатная`
+}
+
+const formatPrice = (price: number) =>
+  new Intl.NumberFormat("ru-RU", { style: "currency", currency: "RUB", maximumFractionDigits: 0 }).format(price)
 
 export default function PropertyDetailPage() {
   const { id } = useParams()
+  const [apt, setApt] = useState<Apartment | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [notFound, setNotFound] = useState(false)
 
-  const property = {
-    id: id,
-    title: "Апартаменты с видом на реку",
-    type: "Апартаменты",
-    address: "Пресненская наб., 8, Москва-Сити",
-    price: 52000000,
-    bedrooms: 3,
-    bathrooms: 2,
-    squareFeet: 145,
-    yearBuilt: 2022,
-    status: "Доступно",
-    description:
-      "Великолепные апартаменты с панорамным видом на Москву-реку и деловой центр. Панорамное остекление от пола до потолка, кухня премиум-класса с техникой Miele, просторная планировка идеальна для приёма гостей. Мастер-спальня с собственной ванной комнатой, гардеробной и выходом на террасу. В доме: 2 машиноместа, бассейн, фитнес-центр, консьерж-сервис 24/7.",
-    features: [
-      "Вид на реку",
-      "Панорамное остекление",
-      "Кухня премиум-класса",
-      "Собственная терраса",
-      "Гардеробная",
-      "Паркет из дуба",
-      "Центральное кондиционирование",
-      "Прачечная в квартире",
-      "Охрана 24/7",
-      "Бассейн",
-      "Фитнес-центр",
-      "Консьерж-сервис",
-    ],
-    images: [
-      "/placeholder.svg?height=600&width=800",
-      "/placeholder.svg?height=600&width=800",
-      "/placeholder.svg?height=600&width=800",
-      "/placeholder.svg?height=600&width=800",
-      "/placeholder.svg?height=600&width=800",
-    ],
-    agent: {
-      name: "Анна Ковалёва",
-      phone: "+7 (495) 123-45-67",
-      email: "anna@novodom.ru",
-      image: "/placeholder.svg?height=200&width=200",
-    },
+  useEffect(() => {
+    if (!id) return
+    setLoading(true)
+    fetch(`${GET_APARTMENTS_URL}?id=${id}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.apartment) {
+          setApt(data.apartment)
+        } else {
+          setNotFound(true)
+        }
+      })
+      .finally(() => setLoading(false))
+  }, [id])
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8 space-y-6">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-10 w-2/3" />
+        <Skeleton className="aspect-video w-full rounded-lg" />
+      </div>
+    )
   }
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("ru-RU", {
-      style: "currency",
-      currency: "RUB",
-      maximumFractionDigits: 0,
-    }).format(price)
+  if (notFound || !apt) {
+    return (
+      <div className="container mx-auto px-4 py-20 text-center">
+        <Icon name="Home" size={64} className="mx-auto mb-4 opacity-30" />
+        <p className="text-xl font-semibold">Объект не найден</p>
+        <Link to="/properties">
+          <Button className="mt-4">Вернуться в каталог</Button>
+        </Link>
+      </div>
+    )
   }
+
+  const images = (apt.images || []).map(httpsUrl)
+  const title = `${roomsLabel(apt.rooms)} кв. ${apt.area ? apt.area + " м²" : ""}, ${apt.building_name || "Новостройка"}`
+  const address = apt.address || apt.locality || ""
+
+  const features: string[] = []
+  if (apt.renovation) features.push(`Ремонт: ${apt.renovation}`)
+  if (apt.balcony) features.push(`Балкон: ${apt.balcony}`)
+  if (apt.floor && apt.floors_total) features.push(`Этаж ${apt.floor} из ${apt.floors_total}`)
+  if (apt.kitchen_space) features.push(`Кухня ${apt.kitchen_space} м²`)
+  if (apt.living_space) features.push(`Жилая площадь ${apt.living_space} м²`)
+  if (apt.lift) features.push("Лифт")
+  if (apt.parking) features.push(`Парковка: ${apt.parking}`)
+  if (apt.building_phase) features.push(`Корпус: ${apt.building_phase}`)
+  if (apt.building_section) features.push(`Секция: ${apt.building_section}`)
+  if (apt.payment_methods) features.push(`Оплата: ${apt.payment_methods}`)
+  if (apt.advantages) features.push(...apt.advantages)
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
         <Link to="/" className="flex items-center gap-1 hover:text-foreground">
-          <Home className="h-4 w-4" />
+          <Icon name="Home" size={16} />
           Главная
         </Link>
-        <ChevronRight className="h-4 w-4" />
-        <Link to="/properties" className="hover:text-foreground">
-          Объекты
-        </Link>
-        <ChevronRight className="h-4 w-4" />
-        <span className="text-foreground">{property.title}</span>
+        <Icon name="ChevronRight" size={16} />
+        <Link to="/properties" className="hover:text-foreground">Объекты</Link>
+        <Icon name="ChevronRight" size={16} />
+        <span className="text-foreground line-clamp-1">{title}</span>
       </div>
 
       <div className="mb-8 grid gap-6 lg:grid-cols-[2fr_1fr]">
         <div>
-          <h1 className="mb-2 text-3xl font-bold">{property.title}</h1>
+          <h1 className="mb-2 text-3xl font-bold">{title}</h1>
           <div className="mb-4 flex items-center gap-2">
-            <MapPin className="h-4 w-4 text-muted-foreground" />
-            <span>{property.address}</span>
-            <Badge
-              className={
-                property.status === "Available"
-                  ? "bg-green-100 text-green-800"
-                  : property.status === "Pending"
-                    ? "bg-yellow-100 text-yellow-800"
-                    : "bg-red-100 text-red-800"
-              }
-              variant="outline"
-            >
-              {property.status}
-            </Badge>
+            <Icon name="MapPin" size={16} className="text-muted-foreground shrink-0" />
+            <span>{address}</span>
+            {apt.building_state && (
+              <Badge variant="outline" className="bg-green-100 text-green-800">{apt.building_state}</Badge>
+            )}
           </div>
           <div className="mb-6 flex flex-wrap items-center gap-4 text-muted-foreground">
-            <div className="flex items-center gap-1">
-              <Bed className="h-5 w-5" />
-              <span>{property.bedrooms} комнаты</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Bath className="h-5 w-5" />
-              <span>{property.bathrooms} санузла</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Square className="h-5 w-5" />
-              <span>{property.squareFeet} м2</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Calendar className="h-5 w-5" />
-              <span>Построен в {property.yearBuilt}</span>
-            </div>
+            {apt.rooms !== null && (
+              <div className="flex items-center gap-1">
+                <Icon name="Bed" size={20} />
+                <span>{apt.rooms} комн.</span>
+              </div>
+            )}
+            {apt.area && (
+              <div className="flex items-center gap-1">
+                <Icon name="Square" size={20} />
+                <span>{apt.area} м²</span>
+              </div>
+            )}
+            {apt.floor && apt.floors_total && (
+              <div className="flex items-center gap-1">
+                <Icon name="Building" size={20} />
+                <span>Этаж {apt.floor}/{apt.floors_total}</span>
+              </div>
+            )}
+            {apt.built_year && (
+              <div className="flex items-center gap-1">
+                <Icon name="Calendar" size={20} />
+                <span>{apt.built_year} г.</span>
+              </div>
+            )}
           </div>
         </div>
         <div className="flex flex-col items-end justify-center">
-          <div className="text-3xl font-bold">{formatPrice(property.price)}</div>
+          {apt.price && <div className="text-3xl font-bold">{formatPrice(apt.price)}</div>}
           <div className="mt-4 flex gap-2">
-            <Button size="lg">Связаться с агентом</Button>
+            <Button size="lg">Связаться</Button>
             <Button size="lg" variant="outline">
-              <Heart className="mr-2 h-4 w-4" />
+              <Icon name="Heart" size={16} className="mr-2" />
               Сохранить
-            </Button>
-            <Button size="icon" variant="outline">
-              <Share2 className="h-4 w-4" />
             </Button>
           </div>
         </div>
       </div>
 
-      <div className="mb-8 grid grid-cols-4 gap-4">
-        <div className="col-span-4 aspect-video overflow-hidden rounded-lg lg:col-span-2 lg:row-span-2">
-          <img
-            src={property.images[0] || "/placeholder.svg"}
-            alt={property.title}
-            className="h-full w-full object-cover"
-          />
-        </div>
-        {property.images.slice(1, 5).map((image, index) => (
-          <div key={index} className="col-span-2 aspect-video overflow-hidden rounded-lg sm:col-span-1">
-            <img
-              src={image || "/placeholder.svg"}
-              alt={`${property.title} ${index + 1}`}
-              className="h-full w-full object-cover"
-            />
+      {images.length > 0 && (
+        <div className="mb-8 grid grid-cols-4 gap-4">
+          <div className="col-span-4 aspect-video overflow-hidden rounded-lg lg:col-span-2 lg:row-span-2">
+            <img src={images[0]} alt={title} className="h-full w-full object-cover" />
           </div>
-        ))}
-      </div>
+          {images.slice(1, 5).map((img, i) => (
+            <div key={i} className="col-span-2 aspect-video overflow-hidden rounded-lg sm:col-span-1">
+              <img src={img} alt={`${title} ${i + 1}`} className="h-full w-full object-cover" />
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="mb-8 grid gap-8 lg:grid-cols-[2fr_1fr]">
         <div>
           <Tabs defaultValue="description">
-            <TabsList className="mb-4 grid w-full grid-cols-3">
+            <TabsList className="mb-4 grid w-full grid-cols-2">
               <TabsTrigger value="description">Описание</TabsTrigger>
-              <TabsTrigger value="features">Особенности</TabsTrigger>
-              <TabsTrigger value="location">Расположение</TabsTrigger>
+              <TabsTrigger value="features">Характеристики</TabsTrigger>
             </TabsList>
             <TabsContent value="description" className="space-y-4">
               <h2 className="text-2xl font-semibold">Описание объекта</h2>
-              <p className="leading-relaxed">{property.description}</p>
+              <p className="leading-relaxed text-muted-foreground">
+                {apt.description || `${roomsLabel(apt.rooms)} квартира в ЖК «${apt.building_name || "Новостройка"}». Площадь ${apt.area} м². ${apt.floor ? `Этаж ${apt.floor} из ${apt.floors_total}.` : ""}`}
+              </p>
             </TabsContent>
             <TabsContent value="features">
-              <h2 className="mb-4 text-2xl font-semibold">Особенности объекта</h2>
+              <h2 className="mb-4 text-2xl font-semibold">Характеристики</h2>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                {property.features.map((feature, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <div className="h-2 w-2 rounded-full bg-primary"></div>
-                    <span>{feature}</span>
+                {features.map((f, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <div className="h-2 w-2 rounded-full bg-primary shrink-0" />
+                    <span className="text-sm">{f}</span>
                   </div>
                 ))}
-              </div>
-            </TabsContent>
-            <TabsContent value="location">
-              <h2 className="mb-4 text-2xl font-semibold">Расположение</h2>
-              <div className="aspect-video overflow-hidden rounded-lg bg-muted">
-                <div className="flex h-full items-center justify-center">
-                  <p className="text-muted-foreground">Здесь будет отображаться карта</p>
-                </div>
               </div>
             </TabsContent>
           </Tabs>
         </div>
 
         <div className="rounded-lg border bg-card p-6 shadow-sm">
-          <div className="mb-4 flex items-center gap-4">
-            <div className="relative h-16 w-16 overflow-hidden rounded-full">
-              <img
-                src={property.agent.image || "/placeholder.svg"}
-                alt={property.agent.name}
-                className="h-full w-full object-cover"
-              />
+          <h3 className="mb-4 font-semibold text-lg">Связаться с агентом</h3>
+          {(apt.sales_agent_name || apt.sales_agent_phone) && (
+            <div className="mb-4 space-y-2">
+              {apt.sales_agent_name && (
+                <div className="flex items-center gap-2">
+                  <Icon name="User" size={16} className="text-muted-foreground" />
+                  <span>{apt.sales_agent_name}</span>
+                </div>
+              )}
+              {apt.sales_agent_phone && (
+                <div className="flex items-center gap-2">
+                  <Icon name="Phone" size={16} className="text-muted-foreground" />
+                  <a href={`tel:${apt.sales_agent_phone}`} className="hover:underline">{apt.sales_agent_phone}</a>
+                </div>
+              )}
             </div>
-            <div>
-              <h3 className="font-semibold">{property.agent.name}</h3>
-              <p className="text-sm text-muted-foreground">Агент по недвижимости</p>
-            </div>
-          </div>
-          <div className="mb-6 space-y-2">
-            <div className="flex items-center gap-2">
-              <Phone className="h-4 w-4 text-muted-foreground" />
-              <span>{property.agent.phone}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Mail className="h-4 w-4 text-muted-foreground" />
-              <span>{property.agent.email}</span>
-            </div>
-          </div>
-          <div className="space-y-4">
-            <div className="grid gap-2">
-              <label htmlFor="name" className="text-sm font-medium">
-                Ваше имя
-              </label>
-              <input
-                id="name"
-                type="text"
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              />
-            </div>
-            <div className="grid gap-2">
-              <label htmlFor="email" className="text-sm font-medium">
-                Ваш Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              />
-            </div>
-            <div className="grid gap-2">
-              <label htmlFor="phone" className="text-sm font-medium">
-                Ваш телефон
-              </label>
-              <input
-                id="phone"
-                type="tel"
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              />
-            </div>
-            <div className="grid gap-2">
-              <label htmlFor="message" className="text-sm font-medium">
-                Сообщение
-              </label>
-              <textarea
-                id="message"
-                rows={4}
-                className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                defaultValue={`Меня интересует объект "${property.title}" по адресу ${property.address}. Прошу связаться со мной для получения дополнительной информации.`}
-              ></textarea>
-            </div>
-            <Button className="w-full">Отправить сообщение</Button>
+          )}
+          <div className="space-y-3">
+            <input
+              type="text"
+              placeholder="Ваше имя"
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            />
+            <input
+              type="tel"
+              placeholder="Ваш телефон"
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            />
+            <textarea
+              rows={3}
+              placeholder={`Интересует: ${title}`}
+              className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            />
+            <Button className="w-full">Отправить заявку</Button>
           </div>
         </div>
       </div>
