@@ -3,85 +3,85 @@ import { SearchFilters } from "@/components/search-filters"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Grid2X2, List, MapPin, Search, SlidersHorizontal } from "lucide-react"
+import Icon from "@/components/ui/icon"
 
 export default function PropertiesPage() {
   const properties = [
     {
       id: "1",
-      title: "Современная квартира в центре",
-      type: "Квартира",
-      address: "ул. Тверская, 15, Москва",
-      price: 18500000,
-      bedrooms: 2,
-      bathrooms: 2,
-      squareFeet: 75,
-      yearBuilt: 2020,
+      title: "3-комнатная квартира, вторичка",
+      type: "Вторичное жильё",
+      address: "ул. Ленина, 42, Екатеринбург",
+      price: 7200000,
+      bedrooms: 3,
+      bathrooms: 1,
+      squareFeet: 78,
+      yearBuilt: 2005,
       status: "Доступно",
       imageUrl: "/placeholder.svg?height=300&width=400",
     },
     {
       id: "2",
-      title: "Загородный дом с участком",
-      type: "Дом",
-      address: "КП Лесной, Московская область",
-      price: 35000000,
+      title: "Коттедж с участком 12 соток",
+      type: "Коттедж",
+      address: "КП Берёзовый, Свердловская обл.",
+      price: 14500000,
       bedrooms: 4,
-      bathrooms: 3,
-      squareFeet: 220,
-      yearBuilt: 2018,
-      status: "Доступно",
-      imageUrl: "/placeholder.svg?height=300&width=400",
-    },
-    {
-      id: "3",
-      title: "Апартаменты с видом на реку",
-      type: "Апартаменты",
-      address: "Пресненская наб., 8, Москва-Сити",
-      price: 52000000,
-      bedrooms: 3,
       bathrooms: 2,
-      squareFeet: 145,
-      yearBuilt: 2022,
-      status: "Бронь",
-      imageUrl: "/placeholder.svg?height=300&width=400",
-    },
-    {
-      id: "4",
-      title: "Таунхаус в историческом районе",
-      type: "Таунхаус",
-      address: "Патриаршие пруды, Москва",
-      price: 85000000,
-      bedrooms: 3,
-      bathrooms: 2,
-      squareFeet: 180,
-      yearBuilt: 2015,
-      status: "Доступно",
-      imageUrl: "/placeholder.svg?height=300&width=400",
-    },
-    {
-      id: "5",
-      title: "Уютный дом у леса",
-      type: "Дом",
-      address: "КП Сосны, Одинцовский район",
-      price: 28000000,
-      bedrooms: 3,
-      bathrooms: 2,
-      squareFeet: 160,
+      squareFeet: 185,
       yearBuilt: 2019,
       status: "Доступно",
       imageUrl: "/placeholder.svg?height=300&width=400",
     },
     {
+      id: "3",
+      title: "1-комнатная квартира, новостройка",
+      type: "Новостройка",
+      address: "ЖК «Академический», Екатеринбург",
+      price: 5800000,
+      bedrooms: 1,
+      bathrooms: 1,
+      squareFeet: 42,
+      yearBuilt: 2024,
+      status: "Бронь",
+      imageUrl: "/placeholder.svg?height=300&width=400",
+    },
+    {
+      id: "4",
+      title: "Земельный участок под ИЖС",
+      type: "Земельный участок",
+      address: "пос. Сысерть, Свердловская обл.",
+      price: 1800000,
+      bedrooms: 0,
+      bathrooms: 0,
+      squareFeet: 1200,
+      yearBuilt: 0,
+      status: "Доступно",
+      imageUrl: "/placeholder.svg?height=300&width=400",
+    },
+    {
+      id: "5",
+      title: "Жилой дом в черте города",
+      type: "Дом",
+      address: "ул. Садовая, 18, Берёзовский",
+      price: 9500000,
+      bedrooms: 3,
+      bathrooms: 2,
+      squareFeet: 140,
+      yearBuilt: 2012,
+      status: "Доступно",
+      imageUrl: "/placeholder.svg?height=300&width=400",
+    },
+    {
       id: "6",
-      title: "Пентхаус с панорамным видом",
-      type: "Апартаменты",
-      address: "Кутузовский проспект, 32, Москва",
-      price: 120000000,
-      bedrooms: 5,
-      bathrooms: 3,
-      squareFeet: 350,
-      yearBuilt: 2021,
+      title: "2-комнатная квартира с ремонтом",
+      type: "Вторичное жильё",
+      address: "пр. Космонавтов, 55, Екатеринбург",
+      price: 6300000,
+      bedrooms: 2,
+      bathrooms: 1,
+      squareFeet: 56,
+      yearBuilt: 1998,
       status: "Доступно",
       imageUrl: "/placeholder.svg?height=300&width=400",
     },
@@ -91,29 +91,29 @@ export default function PropertiesPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold">Каталог недвижимости</h1>
-        <p className="text-muted-foreground">Найдите идеальный дом среди наших предложений</p>
+        <p className="text-muted-foreground">Вторичное жильё, новостройки, коттеджи, дома и земельные участки</p>
       </div>
 
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative flex-1">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input type="search" placeholder="Поиск по адресу, названию или ключевым словам..." className="w-full pl-9" />
+          <Icon name="Search" size={16} className="absolute left-2.5 top-2.5 text-muted-foreground" />
+          <Input type="search" placeholder="Поиск по адресу, типу или ключевым словам..." className="w-full pl-9" />
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" className="h-9 gap-1 sm:hidden">
-            <SlidersHorizontal className="h-4 w-4" />
+            <Icon name="SlidersHorizontal" size={16} />
             Фильтры
           </Button>
           <Tabs defaultValue="grid" className="hidden sm:block">
             <TabsList>
               <TabsTrigger value="grid">
-                <Grid2X2 className="h-4 w-4" />
+                <Icon name="Grid2X2" size={16} />
               </TabsTrigger>
               <TabsTrigger value="list">
-                <List className="h-4 w-4" />
+                <Icon name="List" size={16} />
               </TabsTrigger>
               <TabsTrigger value="map">
-                <MapPin className="h-4 w-4" />
+                <Icon name="MapPin" size={16} />
               </TabsTrigger>
             </TabsList>
           </Tabs>

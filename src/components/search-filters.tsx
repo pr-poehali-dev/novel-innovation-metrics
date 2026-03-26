@@ -14,10 +14,10 @@ export function SearchFilters() {
   const [squareFootageRange, setSquareFootageRange] = useState([30, 300])
   const [yearBuiltRange, setYearBuiltRange] = useState([1990, 2024])
   const [propertyTypes, setPropertyTypes] = useState({
+    secondary: false,
+    newbuilding: false,
+    cottage: false,
     house: false,
-    apartment: false,
-    condo: false,
-    townhouse: false,
     land: false,
   })
   const [amenities, setAmenities] = useState({
@@ -51,10 +51,10 @@ export function SearchFilters() {
     setSquareFootageRange([30, 300])
     setYearBuiltRange([1990, 2024])
     setPropertyTypes({
+      secondary: false,
+      newbuilding: false,
+      cottage: false,
       house: false,
-      apartment: false,
-      condo: false,
-      townhouse: false,
       land: false,
     })
     setAmenities({
@@ -189,6 +189,45 @@ export function SearchFilters() {
             <div className="grid grid-cols-2 gap-4">
               <div className="flex items-center space-x-2">
                 <Checkbox
+                  id="type-secondary"
+                  checked={propertyTypes.secondary}
+                  onCheckedChange={(checked) => setPropertyTypes({ ...propertyTypes, secondary: !!checked })}
+                />
+                <label
+                  htmlFor="type-secondary"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Вторичное жильё
+                </label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="type-newbuilding"
+                  checked={propertyTypes.newbuilding}
+                  onCheckedChange={(checked) => setPropertyTypes({ ...propertyTypes, newbuilding: !!checked })}
+                />
+                <label
+                  htmlFor="type-newbuilding"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Новостройка
+                </label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="type-cottage"
+                  checked={propertyTypes.cottage}
+                  onCheckedChange={(checked) => setPropertyTypes({ ...propertyTypes, cottage: !!checked })}
+                />
+                <label
+                  htmlFor="type-cottage"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Коттедж
+                </label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
                   id="type-house"
                   checked={propertyTypes.house}
                   onCheckedChange={(checked) => setPropertyTypes({ ...propertyTypes, house: !!checked })}
@@ -202,45 +241,6 @@ export function SearchFilters() {
               </div>
               <div className="flex items-center space-x-2">
                 <Checkbox
-                  id="type-apartment"
-                  checked={propertyTypes.apartment}
-                  onCheckedChange={(checked) => setPropertyTypes({ ...propertyTypes, apartment: !!checked })}
-                />
-                <label
-                  htmlFor="type-apartment"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  Квартира
-                </label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="type-condo"
-                  checked={propertyTypes.condo}
-                  onCheckedChange={(checked) => setPropertyTypes({ ...propertyTypes, condo: !!checked })}
-                />
-                <label
-                  htmlFor="type-condo"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  Апартаменты
-                </label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="type-townhouse"
-                  checked={propertyTypes.townhouse}
-                  onCheckedChange={(checked) => setPropertyTypes({ ...propertyTypes, townhouse: !!checked })}
-                />
-                <label
-                  htmlFor="type-townhouse"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  Таунхаус
-                </label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox
                   id="type-land"
                   checked={propertyTypes.land}
                   onCheckedChange={(checked) => setPropertyTypes({ ...propertyTypes, land: !!checked })}
@@ -249,7 +249,7 @@ export function SearchFilters() {
                   htmlFor="type-land"
                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
-                  Участок
+                  Земельный участок
                 </label>
               </div>
             </div>
